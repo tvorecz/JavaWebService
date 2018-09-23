@@ -14,29 +14,34 @@ public class UsersDataSet implements Serializable { //for hibernate
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column(name = "name", unique = true, updatable = false)
-	private String name;
+	@Column(name = "login", unique = true, updatable = false)
+	private String login;
+
+	@Column(name = "password", unique = false, updatable = true)
+	private String password;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public UsersDataSet() { //for hibernate
 	}
 
-	public UsersDataSet(String name) {
-		this.name = name;
+	public UsersDataSet(String login, String password) {
+		this.login = login;
+		this.password = password;
 		id = -1;
 	}
 
-	public UsersDataSet(long id, String name) {
+	public UsersDataSet(long id, String login, String password) {
 		this.id = id;
-		this.name = name;
+		this.login = login;
+		this.password = password;
 	}
 
-	public String getName() {
-		return name;
+	public String getLogin() {
+		return login;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
 	public long getId() {
@@ -47,9 +52,17 @@ public class UsersDataSet implements Serializable { //for hibernate
 		this.id = id;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
-		String[] strings = {new Long(id).toString(), Strings.DOT, Strings.SPACE, name};
+		String[] strings = {new Long(id).toString(), Strings.DOT, Strings.SPACE, login, Strings.SPACE, Strings.LEFT_BRAKET, password, Strings.RIGHT_BRAKET};
 		return Strings.concatenateStrings();
 	}
 }

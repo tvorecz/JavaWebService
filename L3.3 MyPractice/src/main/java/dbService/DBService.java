@@ -28,14 +28,14 @@ public class DBService {
 		return service.getUser(id);
 	}
 
-	long addUser(String name) throws DBException {
-		return service.addUser(name);
+	long addUser(String login, String password) throws DBException {
+		return service.addUser(login, password);
 	}
 }
 
 interface Service {
 	UsersDataSet getUser(long id) throws DBException;
-	long addUser(String name) throws DBException;
+	long addUser(String login, String password) throws DBException;
 }
 
 class DBServiceJDBC implements Service {
@@ -43,12 +43,6 @@ class DBServiceJDBC implements Service {
 
 	public DBServiceJDBC(Connector connector) {
 		connection = connector.getConnection();
-
-		if(checkDataBase())
-		{
-			createDataBase();
-			createTable();
-		}
 	}
 
 	public UsersDataSet getUser(long id) throws DBException {
@@ -62,13 +56,13 @@ class DBServiceJDBC implements Service {
 		}
 	}
 
-	public long addUser(String name) throws DBException {
+	public long addUser(String login, String password) throws DBException {
 		try {
 			connection.setAutoCommit(false);
 			UsersDAO dao = new UsersDAO(connection);
-			dao.insertUser(name);
+			dao.insertUser(login, password);
 			connection.commit();
-			return dao.getUserId(name);
+			return dao.getUserId(login);
 		}
 
 		catch (SQLException e) {
@@ -90,18 +84,6 @@ class DBServiceJDBC implements Service {
 			catch (SQLException ignore) {
 			}
 		}
-	}
-
-	private boolean checkDataBase() {
-		return false;
-	}
-
-	private void createDataBase() {
-
-	}
-
-	private void createTable() {
-
 	}
 }
 
@@ -127,15 +109,15 @@ class DBServiceHibernate implements Service {
 		}
 	}
 
-	public long addUser(String name) throws DBException {
+	public long addUser(String login, String password) throws DBException {
 		try {
 			Session session = sessionFactory.openSession();
 			Transaction transaction = session.beginTransaction();
 			UsersDAO dao = new UsersDAO(session);
-			dao.insertUser(name);
+			dao.insertUser(login, password);
 			transaction.commit();
 			session.close();
-			return getUserId(name);
+			return getUserId(login);
 		}
 
 		catch (SQLException e) {
@@ -143,12 +125,12 @@ class DBServiceHibernate implements Service {
 		}
 	}
 
-	private  long getUserId(String name) throws DBException {
+	private  long getUserId(String login) throws DBException {
 		try {
 			Session session = sessionFactory.openSession();
 			UsersDAO dao = new UsersDAO(session);
 			session.close();
-			return dao.getUserId(name);
+			return dao.getUserId(login);
 		}
 
 		catch (SQLException e) {

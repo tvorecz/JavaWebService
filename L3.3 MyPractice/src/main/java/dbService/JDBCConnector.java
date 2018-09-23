@@ -9,8 +9,8 @@ public class JDBCConnector implements Connector, Strings {
 	public Connection getConnection() {
 		try{
 			//registrate jdbc-driver fpr sqlite in driver manager
-			DriverManager.registerDriver( (Driver) Class.forName(SQLiteDriver).newInstance());
-			String[] connectionStrings = {dbSettings, dbName};
+			DriverManager.registerDriver( (Driver) Class.forName(SQLITE_DRIVER).newInstance());
+			String[] connectionStrings = {DB_SETTINGS, DB_NAME};
 			Connection connection = DriverManager.getConnection(Strings.concatenateStrings(connectionStrings));
 
 			return connection;

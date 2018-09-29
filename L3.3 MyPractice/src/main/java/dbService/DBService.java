@@ -24,11 +24,19 @@ public class DBService {
 		service = new DBServiceHibernate(configurator);
 	}
 
-	UsersDataSet getUser(long id) throws DBException {
+	public UsersDataSet getUser(long id) throws DBException {
 		return service.getUser(id);
 	}
 
-	long addUser(String login, String password) throws DBException {
+	public String getPasswordByLogin(String login) throws DBException {
+		return service.getPasswordByLogin(login);
+	}
+
+	public long getUserIdByLogin(String login) throws DBException {
+		return service.getUserIdByLogin(login);
+	}
+
+	public long addUser(String login, String password) throws DBException {
 		return service.addUser(login, password);
 	}
 }
@@ -36,6 +44,8 @@ public class DBService {
 interface Service {
 	UsersDataSet getUser(long id) throws DBException;
 	long addUser(String login, String password) throws DBException;
+	String getPasswordByLogin(String login) throws DBException;
+	long getUserIdByLogin(String login) throws DBException;
 }
 
 class DBServiceJDBC implements Service {
@@ -49,6 +59,33 @@ class DBServiceJDBC implements Service {
 		try {
 			UsersDAO dao = new UsersDAO(connection);
 			return dao.getUser(id);
+		}
+
+		catch (SQLException e) {
+			throw new DBException(e);
+		}
+	}
+
+	public String getPasswordByLogin(String login) throws DBException {
+		try {
+			UsersDAO dao = new UsersDAO(connection);
+			//TODO: if user not found?
+			long id = dao.getUserId(login);
+			UsersDataSet user = dao.getUser(id);
+			return user.getPassword();
+		}
+
+		catch (SQLException e) {
+			throw new DBException(e);
+		}
+	}
+
+	public long getUserIdByLogin(String login) throws DBException {
+		try {
+			UsersDAO dao = new UsersDAO(connection);
+			//TODO: if user not found?
+			long id = dao.getUserId(login);
+			return id;
 		}
 
 		catch (SQLException e) {
@@ -106,6 +143,36 @@ class DBServiceHibernate implements Service {
 
 		catch (SQLException e) {
 			throw  new DBException(e);
+		}
+	}
+
+	public String getPasswordByLogin(String login) throws DBException {
+		try {
+			Session session = sessionFactory.openSession();
+			UsersDAO dao = new UsersDAO(session);
+			//TODO: if user not found?
+			long id = dao.getUserId(login);
+			UsersDataSet user = dao.getUser(id);
+			session.close();
+			return user.getPassword();
+		}
+
+		catch (SQLException e) {
+			throw new DBException(e);
+		}
+	}
+
+	public long getUserIdByLogin(String login) throws DBException {
+		try {
+			Session session = sessionFactory.openSession();
+			UsersDAO dao = new UsersDAO(session);
+			//TODO: if user not found?
+			long id = dao.getUserId(login);
+			return id;
+		}
+
+		catch (SQLException e) {
+			throw new DBException(e);
 		}
 	}
 
